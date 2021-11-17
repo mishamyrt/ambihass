@@ -21,8 +21,14 @@ Create a `config.json` file
     "display": 1, // Display ID
     "lights": [
         {
-            "id": "light.screen_back_middle",  // Light entitity_id
-            "minBrightness": 60 // minimal brightness
+            "id": "light.screen_back_middle", // Light entitity_id
+            "minBrightness": 60, // minimal brightness
+            "interval": 300 // update interval
+        },
+        {
+            "id": "light.desk_backlight",
+            "minBrightness": 60,
+            "interval": 2000
         }
     ]
 }

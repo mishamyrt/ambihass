@@ -20,7 +20,10 @@ Create a `config.json` file
     "token": "", // Long lived access token
     "display": 1, // Display ID
     "lights": [
-        "light.screen_back_middle" // Lights entities
+        {
+            "id": "light.screen_back_middle",  // Light entitity_id
+            "minBrightness": 60 // minimal brightness
+        }
     ]
 }
 ```

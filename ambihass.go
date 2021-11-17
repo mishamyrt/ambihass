@@ -30,6 +30,17 @@ func debug(a ...interface{}) {
 	}
 }
 
+func writeDevices(c hass.RGBColor, l []config.Light, s *hass.Session) {
+	for _, light := range l {
+		debug("Update " + light.ID)
+		s.TurnOn(hass.LightService{
+			Entity:     light.ID,
+			Color:      c,
+			Brightness: color.CalcBrightness(c, light.MinBrightness),
+		})
+	}
+}
+
 func main() {
 	configuration, err := config.Load(configPath)
 	if err != nil {
@@ -40,7 +51,6 @@ func main() {
 	var img *image.RGBA
 	var colors []hass.RGBColor
 	var current hass.RGBColor
-	var light config.Light
 
 	fmt.Println(
 		"Initiated ambilight for display " +
@@ -62,13 +72,6 @@ func main() {
 			continue
 		}
 		current = colors[0]
-		for _, light = range configuration.Lights {
-			debug("Update " + light.ID)
-			session.TurnOn(hass.LightService{
-				Entity:     light.ID,
-				Color:      current,
-				Brightness: color.CalcBrightness(current, light.MinBrightness),
-			})
-		}
+		go writeDevices(current, configuration.Lights, session)
 	}
 }

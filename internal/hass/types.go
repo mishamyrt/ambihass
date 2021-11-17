@@ -10,5 +10,6 @@ type RGBColor [3]uint32
 
 type LightDevice struct {
 	ID            string `json:"id"`
-	MinBrightness uint32
+	MinBrightness uint32 `json:"minBrightness"`
+	Interval      int    `json:"interval"`
 }

@@ -49,6 +49,7 @@ func main() {
 			configuration.Address,
 	)
 	go watchColors(colorChan, configuration.Display)
+	go controller.Start(100)
 	for {
 		select {
 		case colors, _ := <-colorChan:

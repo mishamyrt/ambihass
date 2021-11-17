@@ -1,17 +1,48 @@
 package lights
 
 import (
+	"sync"
+	"time"
+
 	"github.com/mishamyrt/ambihass/internal/color"
 	"github.com/mishamyrt/ambihass/internal/hass"
 )
 
 const deadZone = 5
 
+type deviceController struct {
+	Device      hass.LightDevice
+	lastUpdated time.Time
+	wai         sync.Mutex
+}
+
+func (s *deviceController) SetColor(next hass.RGBColor) {
+
+}
+
 // Controller controller
 type Controller struct {
-	Devices []hass.LightDevice
-	Session *hass.Session
-	current hass.RGBColor
+	Devices     []hass.LightDevice
+	Session     *hass.Session
+	current     hass.RGBColor
+	nextUpdate  []time.Time
+	needsUpdate []bool
+}
+
+func (s *Controller) Start(interval int) {
+	s.needsUpdate = make([]bool, len(s.Devices))
+	s.nextUpdate = make([]time.Time, len(s.Devices))
+	duration := time.Duration(interval) * time.Millisecond
+	for {
+		time.Sleep(duration)
+		for i, device := range s.Devices {
+			if s.needsUpdate[i] && s.nextUpdate[i].Before(time.Now()) {
+				s.apply(device)
+				s.nextUpdate[i] = time.Now().Add(time.Duration(device.Interval) * time.Millisecond)
+				s.needsUpdate[i] = false
+			}
+		}
+	}
 }
 
 func (s *Controller) SetColor(next hass.RGBColor) {
@@ -19,15 +50,19 @@ func (s *Controller) SetColor(next hass.RGBColor) {
 		return
 	}
 	s.current = next
-	go s.apply(s.current)
+	s.setDirty()
 }
 
-func (s *Controller) apply(c hass.RGBColor) {
-	for _, light := range s.Devices {
-		s.Session.TurnOn(hass.LightState{
-			Entity:     light.ID,
-			Color:      c,
-			Brightness: color.CalcBrightness(c, light.MinBrightness),
-		})
+func (s *Controller) setDirty() {
+	for i := range s.Devices {
+		s.needsUpdate[i] = true
 	}
+}
+
+func (s *Controller) apply(light hass.LightDevice) {
+	s.Session.TurnOn(hass.LightState{
+		Entity:     light.ID,
+		Color:      s.current,
+		Brightness: color.CalcBrightness(s.current, light.MinBrightness),
+	})
 }

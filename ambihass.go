@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	bounds := screenshot.GetDisplayBounds(1)
+	bounds := screenshot.GetDisplayBounds(configuration.Display)
 	session := hass.NewSession(configuration.Address, configuration.Token)
 	var img *image.RGBA
 	var colors []hass.RGBColor

@@ -39,7 +39,7 @@ func main() {
 	session := hass.NewSession(configuration.Address, configuration.Token)
 	var img *image.RGBA
 	var colors []hass.RGBColor
-	var last hass.RGBColor
+	var current hass.RGBColor
 	var light config.Light
 
 	fmt.Println(
@@ -57,18 +57,18 @@ func main() {
 		}
 		colors = color.ExtractColors(img)
 		debug("Colors:", colors)
-		if color.IsCloseColors(colors[0], last, deadZone) {
+		if color.IsCloseColors(colors[0], current, deadZone) {
 			debug("Skip, too close colors")
 			continue
 		}
+		current = colors[0]
 		for _, light = range configuration.Lights {
 			debug("Update " + light.ID)
 			session.TurnOn(hass.LightService{
 				Entity:     light.ID,
-				Color:      colors[0],
-				Brightness: color.CalcBrightness(colors[0], light.MinBrightness),
+				Color:      current,
+				Brightness: color.CalcBrightness(current, light.MinBrightness),
 			})
 		}
-		last = colors[0]
 	}
 }

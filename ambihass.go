@@ -30,7 +30,7 @@ func debug(a ...interface{}) {
 	}
 }
 
-func writeDevices(c hass.RGBColor, l []config.Light, s *hass.Session) {
+func writeDevices(c hass.RGBColor, l []hass.LightDevice, s *hass.Session) {
 	for _, light := range l {
 		debug("Update " + light.ID)
 		s.TurnOn(hass.LightState{

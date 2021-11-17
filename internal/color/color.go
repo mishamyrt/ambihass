@@ -1,8 +1,11 @@
 package color
 
 import (
+	"image"
 	"math"
+	"time"
 
+	"github.com/kbinani/screenshot"
 	"github.com/mishamyrt/ambihass/internal/hass"
 )
 
@@ -22,4 +25,16 @@ func IsCloseColors(first, second hass.RGBColor, distance uint32) bool {
 		}
 	}
 	return true
+}
+
+func WatchDisplayColors(ch chan<- []hass.RGBColor, display int) {
+	bounds := screenshot.GetDisplayBounds(display)
+	var img *image.RGBA
+	var colors []hass.RGBColor
+	for {
+		time.Sleep(500 * time.Millisecond)
+		img, _ = screenshot.CaptureRect(bounds)
+		colors = ExtractColors(img)
+		ch <- colors
+	}
 }

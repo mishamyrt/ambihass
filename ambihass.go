@@ -2,12 +2,9 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"os"
-	"time"
 
-	"github.com/kbinani/screenshot"
-	color "github.com/mishamyrt/ambihass/internal/color"
+	"github.com/mishamyrt/ambihass/internal/color"
 	"github.com/mishamyrt/ambihass/internal/config"
 	"github.com/mishamyrt/ambihass/internal/hass"
 	"github.com/mishamyrt/ambihass/internal/lights"
@@ -36,7 +33,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	colorChan := make(chan []hass.RGBColor)
 	session := hass.NewSession(configuration.Address, configuration.Token)
 	controller := lights.Controller{
 		Session: session,
@@ -48,24 +44,7 @@ func main() {
 			" on " +
 			configuration.Address,
 	)
-	go watchColors(colorChan, configuration.Display)
-	go controller.Start(100)
-	for {
-		select {
-		case colors, _ := <-colorChan:
-			controller.SetColor(colors[0])
-		}
-	}
-}
-
-func watchColors(ch chan<- []hass.RGBColor, display int) {
-	bounds := screenshot.GetDisplayBounds(display)
-	var img *image.RGBA
-	var colors []hass.RGBColor
-	for {
-		time.Sleep(500 * time.Millisecond)
-		img, _ = screenshot.CaptureRect(bounds)
-		colors = color.ExtractColors(img)
-		ch <- colors
-	}
+	colorChan := make(chan []hass.RGBColor)
+	go color.WatchDisplayColors(colorChan, configuration.Display)
+	controller.Start(100, colorChan)
 }

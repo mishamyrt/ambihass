@@ -29,9 +29,14 @@ type Controller struct {
 	needsUpdate []bool
 }
 
-func (s *Controller) Start(interval int) {
+func (s *Controller) Start(interval int, ch <-chan []hass.RGBColor) {
 	s.needsUpdate = make([]bool, len(s.Devices))
 	s.nextUpdate = make([]time.Time, len(s.Devices))
+	go s.listenColors(ch)
+	s.mainLoop(interval)
+}
+
+func (s *Controller) mainLoop(interval int) {
 	duration := time.Duration(interval) * time.Millisecond
 	for {
 		time.Sleep(duration)
@@ -45,7 +50,16 @@ func (s *Controller) Start(interval int) {
 	}
 }
 
-func (s *Controller) SetColor(next hass.RGBColor) {
+func (s *Controller) listenColors(ch <-chan []hass.RGBColor) {
+	for {
+		select {
+		case colors := <-ch:
+			s.setColor(colors[0])
+		}
+	}
+}
+
+func (s *Controller) setColor(next hass.RGBColor) {
 	if color.IsCloseColors(s.current, next, deadZone) {
 		return
 	}

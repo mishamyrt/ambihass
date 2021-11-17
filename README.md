@@ -44,7 +44,7 @@ Create a `config.json` file
 * `minBrightness` — Minimal brightness.
 * `interval` — Device update interval. Some devices do not respond well to too frequent updates.
 * `color` — Color level. If more than one color is recognised in the image, these additional colors can be applied to the lights. Counts from zero.
-* `brightnes` — Brightness level. Allows to better adapt lighting to different brightness levels.
+* `brightness` — Brightness level. Allows to better adapt lighting to different brightness levels.
 
 ## Run
 

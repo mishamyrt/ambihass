@@ -1,4 +1,4 @@
-# Ambihass
+# AmbiHASS
 
 Ambilight for Home Assistant.
 

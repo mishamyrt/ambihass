@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/http"
 	"time"
+
+	"github.com/mishamyrt/ambihass/internal/log"
 )
 
 const apiPrefix = "/api/services"
@@ -62,6 +64,7 @@ func (a *Session) get(path string, v interface{}) error {
 
 			if resp.StatusCode != http.StatusOK {
 				err = errors.New("hass: status not OK: " + resp.Status)
+				log.Debug("Request error: ", err)
 				return
 			}
 

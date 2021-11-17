@@ -1,24 +1,14 @@
 package lights
 
 import (
-	"sync"
 	"time"
 
 	"github.com/mishamyrt/ambihass/internal/color"
 	"github.com/mishamyrt/ambihass/internal/hass"
+	"github.com/mishamyrt/ambihass/internal/log"
 )
 
 const deadZone = 7
-
-type deviceController struct {
-	Device      hass.LightDevice
-	lastUpdated time.Time
-	wai         sync.Mutex
-}
-
-func (s *deviceController) SetColor(next hass.RGBColor) {
-
-}
 
 // Controller controller
 type Controller struct {
@@ -69,6 +59,7 @@ func (s *Controller) setColor(next []hass.RGBColor) {
 	if len(s.current) > 0 && color.IsCloseColors(s.current[0], next[0], deadZone) {
 		return
 	}
+	log.Debug("New colors: ", next)
 	s.current = next
 	s.setDirty()
 }

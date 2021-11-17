@@ -8,6 +8,7 @@ import (
 	"github.com/mishamyrt/ambihass/internal/config"
 	"github.com/mishamyrt/ambihass/internal/hass"
 	"github.com/mishamyrt/ambihass/internal/lights"
+	"github.com/mishamyrt/ambihass/internal/log"
 	"github.com/spf13/pflag"
 )
 
@@ -22,13 +23,9 @@ func init() {
 	pflag.Parse()
 }
 
-func debug(a ...interface{}) {
-	if debugMode {
-		fmt.Println(a...)
-	}
-}
-
 func main() {
+	log.DebugMode = debugMode
+	log.Debug("Debug mode")
 	configuration, err := config.Load(configPath)
 	if err != nil {
 		panic(err)

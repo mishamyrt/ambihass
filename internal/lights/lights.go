@@ -81,8 +81,10 @@ func (s *Controller) setDirty() {
 
 func (s *Controller) apply(light hass.LightDevice, c hass.RGBColor) {
 	s.Session.TurnOn(hass.LightState{
-		Entity:     light.ID,
-		Color:      c,
-		Brightness: color.CalcBrightness(c, light.MinBrightness),
+		Entity: light.ID,
+		Color:  c,
+		Brightness: uint32(
+			float32(color.CalcBrightness(c, light.BrightnessMin)) * light.Brightness,
+		),
 	})
 }

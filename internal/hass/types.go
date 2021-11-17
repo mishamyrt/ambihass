@@ -9,8 +9,9 @@ type LightState struct {
 type RGBColor [3]uint32
 
 type LightDevice struct {
-	ID            string `json:"id"`
-	MinBrightness uint32 `json:"minBrightness"`
-	Interval      int    `json:"interval"`
-	Color         int    `json:"color"`
+	ID            string  `json:"id"`
+	BrightnessMin uint32  `json:"brightnessMin"`
+	Interval      int     `json:"interval"`
+	Color         int     `json:"color"`
+	Brightness    float32 `json:"brightness"`
 }

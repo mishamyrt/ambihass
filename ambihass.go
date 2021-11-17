@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kbinani/screenshot"
-	"github.com/mishamyrt/ambihass/internal/color_extractor"
+	color "github.com/mishamyrt/ambihass/internal/color_extractor"
 	"github.com/mishamyrt/ambihass/internal/config"
 	"github.com/mishamyrt/ambihass/internal/hass"
 	"github.com/spf13/pflag"
@@ -54,9 +54,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		colors = color_extractor.ExtractColors(img)
+		colors = color.ExtractColors(img)
 		debug("Colors:", colors)
-		if color_extractor.IsCloseColors(colors[0], last, deadZone) {
+		if color.IsCloseColors(colors[0], last, deadZone) {
 			debug("Skip, too close colors")
 			continue
 		}
@@ -64,7 +64,7 @@ func main() {
 		session.TurnOn(hass.LightService{
 			Entity:     configuration.Lights[0],
 			Color:      colors[0],
-			Brightness: color_extractor.CalcBrightness(colors[0], 140),
+			Brightness: color.CalcBrightness(colors[0], 140),
 		})
 		last = colors[0]
 	}

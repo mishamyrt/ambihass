@@ -1,4 +1,4 @@
-package color_extractor
+package color
 
 import (
 	"image"

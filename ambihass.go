@@ -10,6 +10,7 @@ import (
 	color "github.com/mishamyrt/ambihass/internal/color"
 	"github.com/mishamyrt/ambihass/internal/config"
 	"github.com/mishamyrt/ambihass/internal/hass"
+	"github.com/mishamyrt/ambihass/internal/lights"
 	"github.com/spf13/pflag"
 )
 
@@ -30,17 +31,6 @@ func debug(a ...interface{}) {
 	}
 }
 
-func writeDevices(c hass.RGBColor, l []hass.LightDevice, s *hass.Session) {
-	for _, light := range l {
-		debug("Update " + light.ID)
-		s.TurnOn(hass.LightState{
-			Entity:     light.ID,
-			Color:      c,
-			Brightness: color.CalcBrightness(c, light.MinBrightness),
-		})
-	}
-}
-
 func main() {
 	configuration, err := config.Load(configPath)
 	if err != nil {
@@ -48,9 +38,12 @@ func main() {
 	}
 	bounds := screenshot.GetDisplayBounds(configuration.Display)
 	session := hass.NewSession(configuration.Address, configuration.Token)
+	controller := lights.Controller{
+		Session: session,
+		Devices: configuration.Lights,
+	}
 	var img *image.RGBA
 	var colors []hass.RGBColor
-	var current hass.RGBColor
 
 	fmt.Println(
 		"Initiated ambilight for display " +
@@ -66,12 +59,6 @@ func main() {
 			panic(err)
 		}
 		colors = color.ExtractColors(img)
-		debug("Colors:", colors)
-		if color.IsCloseColors(colors[0], current, deadZone) {
-			debug("Skip, too close colors")
-			continue
-		}
-		current = colors[0]
-		go writeDevices(current, configuration.Lights, session)
+		controller.SetColor(colors[0])
 	}
 }

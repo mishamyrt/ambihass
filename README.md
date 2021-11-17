@@ -12,7 +12,7 @@ make dist/ambihass
 
 ## Configure
 
-Create a `config.json' file
+Create a `config.json` file
 
 ```js
 {

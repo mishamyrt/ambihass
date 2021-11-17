@@ -14,7 +14,7 @@ make dist/ambihass
 
 Create a `config.json' file
 
-```json
+```js
 {
     "address": "http://hass.local:8123", // HASS adress
     "token": "", // Long lived access token

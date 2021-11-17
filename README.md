@@ -22,17 +22,17 @@ Create a `config.json` file
     "lights": [
         {
             "id": "light.screen_back_middle",
-            "minBrightness": 60,
+            "brightnessMin": 60,
             "interval": 300,
             "color": 0,
-            "brightnes": 1
+            "brightness": 1
         },
         {
             "id": "light.desk_backlight",
-            "minBrightness": 20,
+            "brightnessMin": 20,
             "interval": 2000,
             "color": 1,
-            "brightnes": 0.3
+            "brightness": 0.3
         }
     ]
 }
@@ -41,7 +41,7 @@ Create a `config.json` file
 ### Lights params
 
 * `id` — Light entitity_id.
-* `minBrightness` — Minimal brightness.
+* `brightnessMin` — Minimal brightness.
 * `interval` — Device update interval. Some devices do not respond well to too frequent updates.
 * `color` — Color level. If more than one color is recognised in the image, these additional colors can be applied to the lights. Counts from zero.
 * `brightness` — Brightness level. Allows to better adapt lighting to different brightness levels.

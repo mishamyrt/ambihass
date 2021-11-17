@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/kbinani/screenshot"
-	color "github.com/mishamyrt/ambihass/internal/color_extractor"
+	color "github.com/mishamyrt/ambihass/internal/color"
 	"github.com/mishamyrt/ambihass/internal/config"
 	"github.com/mishamyrt/ambihass/internal/hass"
 	"github.com/spf13/pflag"
@@ -33,7 +33,7 @@ func debug(a ...interface{}) {
 func writeDevices(c hass.RGBColor, l []config.Light, s *hass.Session) {
 	for _, light := range l {
 		debug("Update " + light.ID)
-		s.TurnOn(hass.LightService{
+		s.TurnOn(hass.LightState{
 			Entity:     light.ID,
 			Color:      c,
 			Brightness: color.CalcBrightness(c, light.MinBrightness),

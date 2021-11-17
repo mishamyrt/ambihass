@@ -24,7 +24,7 @@ func (s *deviceController) SetColor(next hass.RGBColor) {
 type Controller struct {
 	Devices     []hass.LightDevice
 	Session     *hass.Session
-	current     hass.RGBColor
+	current     []hass.RGBColor
 	nextUpdate  []time.Time
 	needsUpdate []bool
 }
@@ -42,7 +42,13 @@ func (s *Controller) mainLoop(interval int) {
 		time.Sleep(duration)
 		for i, device := range s.Devices {
 			if s.needsUpdate[i] && s.nextUpdate[i].Before(time.Now()) {
-				s.apply(device)
+				colorIndex := 0
+				if device.Color > len(s.current)-1 {
+					colorIndex = len(s.current) - 1
+				} else {
+					colorIndex = device.Color
+				}
+				s.apply(device, s.current[colorIndex])
 				s.nextUpdate[i] = time.Now().Add(time.Duration(device.Interval) * time.Millisecond)
 				s.needsUpdate[i] = false
 			}
@@ -54,13 +60,13 @@ func (s *Controller) listenColors(ch <-chan []hass.RGBColor) {
 	for {
 		select {
 		case colors := <-ch:
-			s.setColor(colors[0])
+			s.setColor(colors)
 		}
 	}
 }
 
-func (s *Controller) setColor(next hass.RGBColor) {
-	if color.IsCloseColors(s.current, next, deadZone) {
+func (s *Controller) setColor(next []hass.RGBColor) {
+	if len(s.current) > 0 && color.IsCloseColors(s.current[0], next[0], deadZone) {
 		return
 	}
 	s.current = next
@@ -73,10 +79,10 @@ func (s *Controller) setDirty() {
 	}
 }
 
-func (s *Controller) apply(light hass.LightDevice) {
+func (s *Controller) apply(light hass.LightDevice, c hass.RGBColor) {
 	s.Session.TurnOn(hass.LightState{
 		Entity:     light.ID,
-		Color:      s.current,
-		Brightness: color.CalcBrightness(s.current, light.MinBrightness),
+		Color:      c,
+		Brightness: color.CalcBrightness(c, light.MinBrightness),
 	})
 }

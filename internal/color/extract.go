@@ -29,7 +29,7 @@ type Config struct {
 func ExtractColors(image image.Image) []hass.RGBColor {
 	return ExtractColorsWithConfig(image, Config{
 		DownSizeTo:  300.,
-		SmallBucket: .01,
+		SmallBucket: .09,
 	})
 }
 

@@ -16,7 +16,7 @@ Create a `config.json` file
 
 ```js
 {
-    "address": "http://hass.local:8123", // HASS adress
+    "address": "http://hass.local:8123", // HASS address
     "token": "", // Long lived access token
     "display": 1, // Display ID
     "lights": [
@@ -27,7 +27,7 @@ Create a `config.json` file
         },
         {
             "id": "light.desk_backlight",
-            "minBrightness": 60,
+            "minBrightness": 20,
             "interval": 2000
         }
     ]

@@ -8,7 +8,7 @@ import (
 	"github.com/mishamyrt/ambihass/internal/hass"
 )
 
-const deadZone = 5
+const deadZone = 7
 
 type deviceController struct {
 	Device      hass.LightDevice

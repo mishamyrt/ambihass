@@ -15,9 +15,7 @@ func Debug(a ...interface{}) {
 
 const esc = "\033"
 const reset = esc + "[0m"
-const grey = 2
 const yellow = 33
-const blue = 34
 
 func printWithCode(s string, c int) string {
 	return fmt.Sprintf(esc+"["+strconv.Itoa(c)+"m%s"+reset, s)
@@ -25,5 +23,5 @@ func printWithCode(s string, c int) string {
 
 // Grey formats colored terminal text.
 func Grey(s string) string {
-	return printWithCode(s, grey)
+	return printWithCode(s, yellow)
 }

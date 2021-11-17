@@ -10,7 +10,8 @@ import (
 	"github.com/mishamyrt/ambihass/internal/log"
 )
 
-const apiPrefix = "/api/services"
+const apiPrefix = "/api"
+const apiServices = apiPrefix + "/services"
 
 // Doer represents an http client that can "Do" a request
 type Doer interface {
@@ -40,7 +41,11 @@ func (s *Session) TurnOn(body LightState) error {
 	return s.post(apiPrefix+"/light/turn_on", body)
 }
 
-func (a *Session) get(path string, v interface{}) error {
+func (s *Session) CheckAPI() error {
+	return s.get(apiServices)
+}
+
+func (a *Session) get(path string) error {
 	req, err := http.NewRequest("GET", a.host+path, nil)
 
 	if err != nil {
@@ -67,9 +72,6 @@ func (a *Session) get(path string, v interface{}) error {
 				log.Debug("Request error: ", err)
 				return
 			}
-
-			dec := json.NewDecoder(resp.Body)
-			err = dec.Decode(v)
 			success = true
 		}()
 

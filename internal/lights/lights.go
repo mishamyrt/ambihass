@@ -29,6 +29,7 @@ func (s *Controller) Start(interval int, ch <-chan []hass.RGBColor) {
 func (s *Controller) mainLoop(interval int) {
 	duration := time.Duration(interval) * time.Millisecond
 	for {
+		var err error
 		time.Sleep(duration)
 		for i, device := range s.Devices {
 			if s.needsUpdate[i] && s.nextUpdate[i].Before(time.Now()) {
@@ -38,7 +39,10 @@ func (s *Controller) mainLoop(interval int) {
 				} else {
 					colorIndex = device.Color
 				}
-				s.apply(device, s.current[colorIndex])
+				err = s.apply(device, s.current[colorIndex])
+				if err != nil {
+					log.Debug("Update fail ", device.ID)
+				}
 				s.nextUpdate[i] = time.Now().Add(time.Duration(device.Interval) * time.Millisecond)
 				s.needsUpdate[i] = false
 			}
@@ -70,8 +74,8 @@ func (s *Controller) setDirty() {
 	}
 }
 
-func (s *Controller) apply(light hass.LightDevice, c hass.RGBColor) {
-	s.Session.TurnOn(hass.LightState{
+func (s *Controller) apply(light hass.LightDevice, c hass.RGBColor) error {
+	return s.Session.TurnOn(hass.LightState{
 		Entity: light.ID,
 		Color:  c,
 		Brightness: uint32(

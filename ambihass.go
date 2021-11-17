@@ -12,8 +12,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-const deadZone = 5
-
 var configPath string = os.Getenv("HOME") + ".config/ambihass/config.json"
 var debugMode bool
 
@@ -31,6 +29,10 @@ func main() {
 		panic(err)
 	}
 	session := hass.NewSession(configuration.Address, configuration.Token)
+	err = session.CheckAPI()
+	if err != nil {
+		panic("Failed to connect to Home Assistant")
+	}
 	controller := lights.Controller{
 		Session: session,
 		Devices: configuration.Lights,

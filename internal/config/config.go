@@ -18,6 +18,6 @@ func Load(path string) (c Config, err error) {
 		return c, errors.New("The config file does not exist.")
 	}
 
-	readJSONConfig(path, &c)
-	return c, nil
+	err = readJSONConfig(path, &c)
+	return c, err
 }

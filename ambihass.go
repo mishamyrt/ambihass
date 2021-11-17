@@ -40,6 +40,7 @@ func main() {
 	var img *image.RGBA
 	var colors []hass.RGBColor
 	var last hass.RGBColor
+	var light config.Light
 
 	fmt.Println(
 		"Initiated ambilight for display " +
@@ -60,12 +61,14 @@ func main() {
 			debug("Skip, too close colors")
 			continue
 		}
-		debug("Update")
-		session.TurnOn(hass.LightService{
-			Entity:     configuration.Lights[0],
-			Color:      colors[0],
-			Brightness: color.CalcBrightness(colors[0], 140),
-		})
+		for _, light = range configuration.Lights {
+			debug("Update " + light.ID)
+			session.TurnOn(hass.LightService{
+				Entity:     light.ID,
+				Color:      colors[0],
+				Brightness: color.CalcBrightness(colors[0], light.MinBrightness),
+			})
+		}
 		last = colors[0]
 	}
 }

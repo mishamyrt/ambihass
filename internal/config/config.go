@@ -1,34 +1,22 @@
 package config
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"os"
 )
 
-func readJSONConfig(filePath string, config *Config) error {
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal([]byte(data), &config)
-	return err
+type Light struct {
+	ID            string `json:"id"`
+	MinBrightness uint32
 }
 
-func fileExists(path string) bool {
-	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		return false
-	}
-	return true
-}
+// "id": "light.screen_back_middle",
+//             "minBrightness": 60
 
 type Config struct {
-	Token   string   `json:"token"`
-	Address string   `json:"address"`
-	Display uint64   `json:"display"`
-	Lights  []string `json:"lights"`
+	Token   string  `json:"token"`
+	Address string  `json:"address"`
+	Display int     `json:"display"`
+	Lights  []Light `json:"lights"`
 }
 
 func Load(path string) (c Config, err error) {

@@ -8,6 +8,9 @@ import (
 	"github.com/mishamyrt/ambihass/internal/hass"
 )
 
+const downSizeFactor = 250.
+const minBucket = .06
+
 type bucket struct {
 	Red   float64
 	Green float64
@@ -21,24 +24,12 @@ func (c ByCount) Len() int           { return len(c) }
 func (c ByCount) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c ByCount) Less(i, j int) bool { return c[i].Count < c[j].Count }
 
-type Config struct {
-	DownSizeTo  float64
-	SmallBucket float64
-}
-
 func ExtractColors(image image.Image) []hass.RGBColor {
-	return ExtractColorsWithConfig(image, Config{
-		DownSizeTo:  300.,
-		SmallBucket: .09,
-	})
-}
-
-func ExtractColorsWithConfig(image image.Image, config Config) []hass.RGBColor {
 	width := image.Bounds().Max.X
 	height := image.Bounds().Max.Y
 
-	stepX := int(math.Max(float64(width)/config.DownSizeTo, 1))
-	stepY := int(math.Max(float64(height)/config.DownSizeTo, 1))
+	stepX := int(math.Max(float64(width)/downSizeFactor, 1))
+	stepY := int(math.Max(float64(height)/downSizeFactor, 1))
 
 	var buckets [2][2][2]bucket
 	totalCount := 0.
@@ -59,7 +50,6 @@ func ExtractColorsWithConfig(image image.Image, config Config) []hass.RGBColor {
 			totalCount++
 		}
 	}
-
 	var bucketsAverages []bucket
 	for i := 0; i < 2; i++ {
 		for j := 0; j < 2; j++ {
@@ -81,7 +71,7 @@ func ExtractColorsWithConfig(image image.Image, config Config) []hass.RGBColor {
 
 	colors := []hass.RGBColor{}
 	for _, avg := range bucketsAverages {
-		if avg.Count/totalCount > config.SmallBucket {
+		if avg.Count/totalCount > minBucket {
 			colors = append(colors, hass.RGBColor{
 				uint32(uint8(math.Round(avg.Red))),
 				uint32(uint8(math.Round(avg.Green))),

@@ -1,6 +1,7 @@
 package lights
 
 import (
+	"math"
 	"time"
 
 	"github.com/mishamyrt/ambihass/internal/color"
@@ -28,19 +29,17 @@ func (s *Controller) Start(interval int, ch <-chan []hass.RGBColor) {
 
 func (s *Controller) mainLoop(interval int) {
 	duration := time.Duration(interval) * time.Millisecond
-	var colorIndex int
+	var err error
 	for {
-		var err error
 		time.Sleep(duration)
 		for i, device := range s.Devices {
 			if s.needsUpdate[i] && s.nextUpdate[i].Before(time.Now()) {
-				colorIndex = 0
-				if device.Color > len(s.current)-1 {
-					colorIndex = len(s.current) - 1
-				} else {
-					colorIndex = device.Color
-				}
-				err = s.apply(device, s.current[colorIndex])
+				err = s.apply(device, s.current[int(
+					math.Min(
+						float64(len(s.current)-1),
+						float64(device.Color),
+					),
+				)])
 				if err != nil {
 					log.Debug("Update fail ", device.ID)
 				}
@@ -53,10 +52,8 @@ func (s *Controller) mainLoop(interval int) {
 
 func (s *Controller) listenColors(ch <-chan []hass.RGBColor) {
 	for {
-		select {
-		case colors := <-ch:
-			s.setColor(colors)
-		}
+		colors := <-ch
+		s.setColor(colors)
 	}
 }
 

@@ -38,7 +38,7 @@ func NewSession(host, token string) *Session {
 }
 
 func (s *Session) TurnOn(body LightState) error {
-	return s.post(apiPrefix+"/light/turn_on", body)
+	return s.post(apiServices+"/light/turn_on", body)
 }
 
 func (s *Session) CheckAPI() error {

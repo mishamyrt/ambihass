@@ -91,7 +91,7 @@ func (a *Session) post(path string, v interface{}) error {
 		if err != nil {
 			return err
 		}
-
+		log.Debug(string(data))
 		req, err = http.NewRequest("POST", a.host+path, bytes.NewReader(data))
 		if err != nil {
 			return err
@@ -105,9 +105,7 @@ func (a *Session) post(path string, v interface{}) error {
 		}
 	}
 
-	if a.token != "" {
-		req.Header.Set("Authorization", "Bearer "+a.token)
-	}
+	req.Header.Set("Authorization", "Bearer "+a.token)
 
 	var err error
 	success := false

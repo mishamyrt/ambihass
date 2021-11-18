@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const schedulerInterval = 100
+
 var configPath string = os.Getenv("HOME") + ".config/ambihass/config.json"
 var debugMode bool
 
@@ -45,5 +47,5 @@ func main() {
 	)
 	colorChan := make(chan []hass.RGBColor)
 	go color.WatchDisplayColors(colorChan, configuration.Display)
-	controller.Start(100, colorChan)
+	controller.Start(schedulerInterval, colorChan)
 }

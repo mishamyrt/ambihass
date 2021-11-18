@@ -9,6 +9,8 @@ import (
 	"github.com/mishamyrt/ambihass/internal/hass"
 )
 
+const screenshotInterval = 500
+
 func CalcBrightness(c hass.RGBColor, minimum uint32) uint32 {
 	return uint32(
 		math.Max(
@@ -32,7 +34,7 @@ func WatchDisplayColors(ch chan<- []hass.RGBColor, display int) {
 	var img *image.RGBA
 	var colors []hass.RGBColor
 	for {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(screenshotInterval * time.Millisecond)
 		img, _ = screenshot.CaptureRect(bounds)
 		colors = ExtractColors(img)
 		ch <- colors

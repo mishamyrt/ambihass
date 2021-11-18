@@ -11,6 +11,10 @@ import (
 
 const deadZone = 7
 
+func nextTime(interval int) time.Time {
+	return time.Now().Add(time.Duration(interval) * time.Millisecond)
+}
+
 // Controller controller
 type Controller struct {
 	Devices     []hass.LightDevice
@@ -43,7 +47,7 @@ func (s *Controller) mainLoop(interval int) {
 				if err != nil {
 					log.Debug("Update fail ", device.ID)
 				}
-				s.nextUpdate[i] = time.Now().Add(time.Duration(device.Interval) * time.Millisecond)
+				s.nextUpdate[i] = nextTime(device.Interval)
 				s.needsUpdate[i] = false
 			}
 		}

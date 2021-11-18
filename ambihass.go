@@ -39,7 +39,7 @@ func main() {
 		Session: session,
 		Devices: configuration.Lights,
 	}
-	fmt.Println(
+	log.Message(
 		"Initiated ambilight for display " +
 			fmt.Sprint(configuration.Display) +
 			" on " +

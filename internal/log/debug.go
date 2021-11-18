@@ -13,8 +13,13 @@ func Debug(a ...interface{}) {
 	}
 }
 
+func Message(a ...interface{}) {
+	fmt.Println(Yellow(fmt.Sprint(a...)))
+}
+
 const esc = "\033"
 const reset = esc + "[0m"
+const grey = 30
 const yellow = 33
 
 func printWithCode(s string, c int) string {
@@ -23,5 +28,10 @@ func printWithCode(s string, c int) string {
 
 // Grey formats colored terminal text.
 func Grey(s string) string {
+	return printWithCode(s, grey)
+}
+
+// Yellow formats colored terminal text.
+func Yellow(s string) string {
 	return printWithCode(s, yellow)
 }

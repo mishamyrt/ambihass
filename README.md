@@ -1,4 +1,4 @@
-# AmbiHASS
+# AmbiHASS [![Lint](https://github.com/mishamyrt/ambihass/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/mishamyrt/ambihass/actions/workflows/golangci-lint.yml)
 
 Ambilight for Home Assistant.
 

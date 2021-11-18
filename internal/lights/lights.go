@@ -76,7 +76,10 @@ func (s *Controller) apply(light hass.LightDevice, c hass.RGBColor) error {
 		Entity: light.ID,
 		Color:  c,
 		Brightness: uint32(
-			float32(color.CalcBrightness(c, light.BrightnessMin)) * light.Brightness,
+			math.Min(
+				float64(color.CalcBrightness(c, light.BrightnessMin))*light.Brightness,
+				255,
+			),
 		),
 	})
 }

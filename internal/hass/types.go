@@ -13,5 +13,5 @@ type LightDevice struct {
 	BrightnessMin uint32  `json:"brightnessMin"`
 	Interval      int     `json:"interval"`
 	Color         int     `json:"color"`
-	Brightness    float32 `json:"brightness"`
+	Brightness    float64 `json:"brightness"`
 }

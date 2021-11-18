@@ -28,7 +28,7 @@ func NewSession(host, token string) *Session {
 		host:  host,
 		token: token,
 		client: &http.Client{
-			Timeout: time.Second * 10,
+			Timeout: time.Second * 2,
 		},
 	}
 }

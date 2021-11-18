@@ -18,11 +18,11 @@ type bucket struct {
 	Count float64
 }
 
-type ByCount []bucket
+type byCount []bucket
 
-func (c ByCount) Len() int           { return len(c) }
-func (c ByCount) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
-func (c ByCount) Less(i, j int) bool { return c[i].Count < c[j].Count }
+func (c byCount) Len() int           { return len(c) }
+func (c byCount) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c byCount) Less(i, j int) bool { return c[i].Count < c[j].Count }
 
 func ExtractColors(image image.Image) []hass.RGBColor {
 	width := image.Bounds().Max.X
@@ -67,15 +67,14 @@ func ExtractColors(image image.Image) []hass.RGBColor {
 		}
 	}
 
-	sort.Sort(sort.Reverse(ByCount(bucketsAverages)))
-
+	sort.Sort(sort.Reverse(byCount(bucketsAverages)))
 	colors := []hass.RGBColor{}
-	for _, avg := range bucketsAverages {
-		if avg.Count/totalCount > minBucket {
+	for _, bucket := range bucketsAverages {
+		if bucket.Count/totalCount > minBucket {
 			colors = append(colors, hass.RGBColor{
-				uint32(uint8(math.Round(avg.Red))),
-				uint32(uint8(math.Round(avg.Green))),
-				uint32(uint8(math.Round(avg.Blue))),
+				uint32(uint8(math.Round(bucket.Red))),
+				uint32(uint8(math.Round(bucket.Green))),
+				uint32(uint8(math.Round(bucket.Blue))),
 			})
 		}
 	}

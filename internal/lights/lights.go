@@ -52,8 +52,7 @@ func (s *Controller) mainLoop(interval int) {
 
 func (s *Controller) listenColors(ch <-chan []hass.RGBColor) {
 	for {
-		colors := <-ch
-		s.setColor(colors)
+		s.setColor(<-ch)
 	}
 }
 

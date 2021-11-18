@@ -13,21 +13,17 @@ import (
 const apiPrefix = "/api"
 const apiServices = apiPrefix + "/services"
 
-// Doer represents an http client that can "Do" a request
-type Doer interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-
 // Session is the access and credentials for the API
 type Session struct {
 	host   string
 	token  string
-	client Doer
+	client *http.Client
 }
 
 // NewSession returns a new *Session to be used to interface with the
 // Home Assistant system.
 func NewSession(host, token string) *Session {
+
 	return &Session{
 		host:  host,
 		token: token,
@@ -45,28 +41,43 @@ func (s *Session) CheckAPI() error {
 	return s.get(apiServices)
 }
 
-func (a *Session) get(path string) error {
-	req, err := http.NewRequest("GET", a.host+path, nil)
+func (s *Session) get(path string) (err error) {
+	req, err := s.createRequest("GET", path, nil)
+	s.execute(req)
+	return nil
+}
 
+func (s *Session) post(path string, v interface{}) (err error) {
+	var data []byte
+	if v != nil {
+		data, err = json.Marshal(v)
+		if err != nil {
+			return err
+		}
+	}
+	req, err := s.createRequest("POST", path, data)
+	s.execute(req)
+	return nil
+}
+
+func (s *Session) createRequest(method string, path string, body []byte) (*http.Request, error) {
+	req, err := http.NewRequest(method, s.host+path, bytes.NewReader(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+s.token)
+	return req, nil
+}
 
-	if a.token != "" {
-		req.Header.Set("Authorization", "Bearer "+a.token)
-	}
-
-	success := false
+func (s *Session) execute(req *http.Request) (success bool) {
 	for i := 0; i < 3; i++ {
 		func() {
-			var resp *http.Response
-			resp, err = a.client.Do(req)
+			resp, err := s.client.Do(req)
 			if err != nil {
 				return
 			}
-
 			defer resp.Body.Close()
-
 			if resp.StatusCode != http.StatusOK {
 				err = errors.New("hass: status not OK: " + resp.Status)
 				log.Debug("Request error: ", err)
@@ -79,53 +90,5 @@ func (a *Session) get(path string) error {
 			break
 		}
 	}
-
-	return err
-}
-
-func (a *Session) post(path string, v interface{}) error {
-	var req *http.Request
-
-	if v != nil {
-		data, err := json.Marshal(v)
-		if err != nil {
-			return err
-		}
-		log.Debug(string(data))
-		req, err = http.NewRequest("POST", a.host+path, bytes.NewReader(data))
-		if err != nil {
-			return err
-		}
-		req.Header.Set("Content-Type", "application/json")
-	} else {
-		var err error
-		req, err = http.NewRequest("POST", a.host+path, nil)
-		if err != nil {
-			return err
-		}
-	}
-
-	req.Header.Set("Authorization", "Bearer "+a.token)
-
-	var err error
-	success := false
-	for i := 0; i < 3; i++ {
-		func() {
-			var resp *http.Response
-			resp, err = a.client.Do(req)
-			if err != nil {
-				return
-			}
-
-			defer resp.Body.Close()
-
-			success = true
-		}()
-
-		if success {
-			break
-		}
-	}
-
-	return err
+	return
 }

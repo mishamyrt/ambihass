@@ -43,6 +43,9 @@ func (s *Session) CheckAPI() error {
 
 func (s *Session) get(path string) (err error) {
 	req, err := s.createRequest("GET", path, nil)
+	if err != nil {
+		return err
+	}
 	s.execute(req)
 	return nil
 }
@@ -56,6 +59,9 @@ func (s *Session) post(path string, v interface{}) (err error) {
 		}
 	}
 	req, err := s.createRequest("POST", path, data)
+	if err != nil {
+		return err
+	}
 	s.execute(req)
 	return nil
 }

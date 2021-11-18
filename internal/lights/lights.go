@@ -28,12 +28,13 @@ func (s *Controller) Start(interval int, ch <-chan []hass.RGBColor) {
 
 func (s *Controller) mainLoop(interval int) {
 	duration := time.Duration(interval) * time.Millisecond
+	var colorIndex int
 	for {
 		var err error
 		time.Sleep(duration)
 		for i, device := range s.Devices {
 			if s.needsUpdate[i] && s.nextUpdate[i].Before(time.Now()) {
-				colorIndex := 0
+				colorIndex = 0
 				if device.Color > len(s.current)-1 {
 					colorIndex = len(s.current) - 1
 				} else {
